@@ -11,7 +11,7 @@ using System.Windows.Forms;
 namespace iniciosesion_3int
 {
     /// <summary>
-    /// Formulario dos de registro, aqui se crean los nuevos usuarios.
+    /// Formulario dos de registro, aqui se crean los nuevos usuarios y se llevan la base de datos.
     /// </summary>
     
     public partial class Form2 : Form
@@ -25,16 +25,22 @@ namespace iniciosesion_3int
 
         private void btn_registrar_Click(object sender, EventArgs e)
         {
+            bool crear = false;
+
             DialogResult r = MessageBox.Show("Esta seguro que desea crear el usuario con nombre " + txt_new_usuario.Text + " y con la contraseña " + txt_new_pass.Text + " ??"
-                , "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Hand);
+                , "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Stop);
 
             if (r == DialogResult.Yes)
             {
                 Conexion co = new Conexion();
-                co.registrar(txt_new_usuario.Text, txt_new_pass.Text);
+                crear = co.registrar(txt_new_usuario.Text, txt_new_pass.Text);
                 
-                txt_new_usuario.Clear();
-                txt_new_pass.Clear();
+                if (crear == true)
+                {
+                    txt_new_usuario.Clear();
+                    txt_new_pass.Clear();
+                }
+                
             }
         }
 

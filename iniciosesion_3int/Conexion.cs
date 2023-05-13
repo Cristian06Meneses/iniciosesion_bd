@@ -10,12 +10,15 @@ using System.Windows.Forms;
 
 namespace iniciosesion_3int
 {
+    /// <summary>
+    /// Esta es la clase conexion donde se ejecuta todo lo necesario para la conexion
+    /// con la base de datos conectar/agregar/verificar.
+    /// </summary>
     internal class Conexion
     {
         SqlConnection conec;
         SqlCommand cmd;
         SqlDataReader dr_lector;
-        string estado = "";
 
         public Conexion()
         {
@@ -32,61 +35,42 @@ namespace iniciosesion_3int
 
         }
 
-        public string registrar(string usuario, string pass)
+        public bool registrar(string usuario, string pass)
         {
+            bool r = false;
             string resultado = "Registrado correctamente";
+            string query = "insert into tbl_usuarios values('" + usuario + "', '" + pass + "' )";
+
+            cmd = new SqlCommand(query, conec);
 
             try
             {
-                cmd = new SqlCommand("insert into tbl_usuarios values('"+ usuario + "', '" + pass + "' )");
-                cmd.ExecuteNonQuery();
+                cmd.ExecuteReader();
 
-                MessageBox.Show("Usuario creado :D");
+                r = true;
+
+                MessageBox.Show(resultado);
             }
             catch(Exception ex)
             {
                 resultado = "No se pudo registrar: " + ex.ToString();
+                MessageBox.Show(resultado);
             }
 
-            return resultado;
+            return r;
         }
 
         public bool check(string usuario, string pass)
         {
-            bool verificar_nom = false;
-            bool verificar_ps = false;
             bool resultado = false;
+            string query = "Select nom_usu, pass from tbl_usuarios where nom_usu = '" + usuario + "' and pass = '" + pass + "'";
 
-            try
-            {
-                cmd = new SqlCommand("select nom_usu from tbl_usuarios where nom_usu = " + usuario + "");
-                dr_lector = cmd.ExecuteReader();
-                while (dr_lector.Read())
-                {
-                    
-                    verificar_nom = true;
-                }
-            }
-            catch(Exception ex)
-            {
-                verificar_nom = false;
-            }
+            cmd = new SqlCommand(query, conec);
 
-            try
-            {
-                cmd = new SqlCommand("select pass from tbl_usuarios where pass = " + pass + "");
-                dr_lector = cmd.ExecuteReader();
-                while (dr_lector.Read())
-                {
-                    verificar_ps = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                verificar_ps = false;
-            }
+            dr_lector = cmd.ExecuteReader();
+            bool entrar = dr_lector.HasRows;
 
-            if (verificar_nom == true && verificar_ps == true)
+            if (entrar)
             {
                 resultado = true;
             }
